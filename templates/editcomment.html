@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row height">
+    <h2>Edit comment</h2>
+    <form method="post" class="newpost-page">
+        <input type="hidden" id="post_id" name="post_id" value="{{post_id}}">
+        <div class="post">
+            <div class="post-heading">
+                <div class="post-title">
+                    {{post.subject}} by {{post.author}}
+                </div>
+                <div class="post-date">
+                    {{post.created.strftime("%b %d, %Y")}}
+                </div>
+            </div>
+            <div class="post-content">
+                <div class="col span-1-of-3">
+                    <p class="pre">
+                        {{post.ingredients_content}}
+                        <br>
+                    </p>
+                </div>
+                <div class="col span-2-of-3">
+                    <p class="pre">
+                        {{post.content}}
+                        <br>
+                    </p>
+                </div>
+            </div>
+            <ul class="widgets">
+                <li>
+                    <a class="ion-thumbsup likes_widgets" href="/blog/{{post_id}}/liked"> Like ({{post.liked}})</a>
+                </li>
+                <li>
+                    <a class="ion-thumbsdown likes_widgets" href="/blog/{{post_id}}/disliked"> Dislike ({{post.disliked}})</a>
+                </li>
+                <li>
+                    <a class="ion-compose updatepost" href="/blog/editpost/{{post_id}}"> Edit Post</a>
+                </li>
+                <li>
+                    <a class="ion-trash-a updatepost" href="/blog/deletepost/{{post_id}}"> Delete Post</a>
+                </li>
+            </ul>
+            <input type="hidden" name="numofcom" value="{{numofcom}}">
+            <p class="comment">Comments ({{post.numofcom}})
+                <br>
+            </p>
+            <div class="block">
+                <textarea class="comment_area" name="edit_comment" placeholder="Edit your comment" id="edit_comment" value="edit_comment">{{edit_comment}}</textarea>
+            </div>
+            <input type="hidden" name="author" value="{{user.name}}">
+            <div class="block">
+                <div class="error">
+                    {{error}}
+                </div>
+            </div>
+            <div class="submit-btn">
+                <input type="submit" value="Edit this comment">
+                <div class="btn-error">
+                    <button onclick="goBack()">Go Back</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

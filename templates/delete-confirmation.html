@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row height">
+    <form method="post">
+        <h1>Delete</h1>
+        <div class="delete">
+            <p>Do you really want to delete this post?</p>
+        </div>
+        <div class="confirm">
+            {{comment}}
+        </div>
+        <div class="block">
+            <button type="submit">Delete</button>
+            <div class="btn-error">
+                <button onclick="goBack()">Go Back</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

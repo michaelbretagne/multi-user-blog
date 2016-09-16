@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row height">
+    <h2>Comment post</h2>
+    <form method="post" class="newpost-page">
+        <input type="hidden" id="post_id" name="post_id" value="{{post_id}}">
+        <div class="post">
+            <div class="post-heading">
+                <div class="post-title">
+                    {{post.subject}} by {{post.author}}
+                </div>
+                <div class="post-date">
+                    {{post.created.strftime("%b %d, %Y")}}
+                </div>
+            </div>
+            <div class="post-content">
+                <div class="col span-1-of-3">
+                    <br>
+                    <ins>Ingredients:</ins>
+                    <br>
+                    <p class="pre">
+                        {{post.ingredients_content}}
+                        <br>
+                    </p>
+                </div>
+                <div class="col span-2-of-3">
+                    <br>
+                    <ins>Directions:</ins>
+                    <br>
+                    <p class="pre">
+                        {{post.content}}
+                        <br>
+                    </p>
+                </div>
+            </div>
+            <ul class="widgets">
+                <li>
+                    <a class="ion-thumbsup likes_widgets" href="/blog/{{post_id}}/liked"> Like ({{post.liked}})</a>
+                </li>
+                <li>
+                    <a class="ion-thumbsdown likes_widgets" href="/blog/{{post_id}}/disliked"> Dislike ({{post.disliked}})</a>
+                </li>
+                <li>
+                    <a class="ion-compose updatepost" href="/blog/editpost/{{post_id}}"> Edit Post</a>
+                </li>
+                <li>
+                    <a class="ion-trash-a updatepost" href="/blog/deletepost/{{post_id}}"> Delete Post</a>
+                </li>
+            </ul>
+            <input type="hidden" name="numofcom" value="{{numofcom}}">
+            <p class="comment">Comments ({{post.numofcom}})
+                <br>
+            </p>
+            <div class="block">
+                <textarea class="comment_area" name="comment" placeholder="Your comment" id="comment"></textarea>
+            </div>
+            <input type="hidden" name="author" value="{{user.name}}">
+            <div class="block">
+                <div class="error">
+                    {{error}}
+                </div>
+            </div>
+            <div class="submit-btn">
+                <input type="submit" value="Comment this post">
+                <div class="btn-error">
+                    <button onclick="goBack()">Go Back</button>
+                </div>
+            </div>
+            <div class="comment">
+                {% for c in comment %}
+                <div class="comment_text">
+                    <b>{{c.author}}</b> ({{c.created.strftime("%b %d, %Y")}})
+                    <br>
+                    <br>
+                    <p class="pre">{{c.comment}}</p>
+                    <br>
+                    <a class="ion-compose delete_comment" href="/blog/{{post_id}}/editcomment/{{c.key().id()}}"> Edit Comment</a>
+                    <a class="ion-trash-a delete_comment" href="/blog/{{post_id}}/deletecomment/{{c.key().id()}}"> Delete Comment</a>
+                    <br>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

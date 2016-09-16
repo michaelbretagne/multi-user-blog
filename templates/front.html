@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row height">
+    <h1>The recipes</h1>
+    <div class="block">
+        <div class="error">
+            {{error}}
+        </div>
+    </div>
+    {% for p in posts %}
+        {{ p.render() | safe }}
+        <div class="row">
+            <form method="post">
+                <ul class="widgets">
+                    <li>
+                        <a class="ion-thumbsup likes_widgets" href="/blog/{{p.key().id()}}/liked"> Like ({{p.liked}})</a>
+                    </li>
+                    <li>
+                        <a class="ion-thumbsdown likes_widgets" href="/blog/{{p.key().id()}}/disliked"> Dislike ({{p.disliked}})</a>
+                    </li>
+                    <li>
+                        <a class="ion-chatboxes updatepost" href="/blog/commentpost/{{p.key().id()}}"> Comments ({{p.numofcom}})</a>
+                    </li>
+                    <li>
+                        <a class="ion-compose updatepost" href="/blog/editpost/{{p.key().id()}}"> Edit Post</a>
+                    </li>
+                    <li>
+                        <a class="ion-trash-a updatepost" href="/blog/deletepost/{{p.key().id()}}"> Delete Post</a>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

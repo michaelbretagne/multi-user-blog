@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row height">
+    <form method="post" class="newpost-page">
+        <h2>Edit post</h2>
+        <input type="hidden" id="post_id" name="post_id" value="{{post_id}}">
+        <div class="block">
+            <input type="text" name="subject" value="{{subject}}" placeholder="Your recipe's title">
+        </div>
+        <div class="col span-1-of-3">
+            <textarea name="ingredients_content" placeholder="Description and directory of your recipe">{{ingredients_content}}</textarea>
+        </div>
+        <div class="col span-2-of-3">
+            <textarea name="content" placeholder="Description and directory of your recipe">{{content}}</textarea>
+        </div>
+        <div class="block">
+            <div class="error">
+                {{error}}
+            </div>
+        </div>
+        <div class="block">
+            <input type="submit" value="Update your post">
+            <div class="btn-error">
+                <button onclick="goBack()">Go Back</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

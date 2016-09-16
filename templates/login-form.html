@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row  height">
+    <form method="post" class="login-page">
+        <h2>Login</h2>
+        <div class="block">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" value="{{username}}">
+        </div>
+        <div class="block">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" value="{{password}}">
+        </div>
+        <div class="block">
+            <div class="error">
+                {{error}}
+            </div>
+        </div>
+        <div class="block">
+            <input type="submit" value="Log In">
+            <a class="login-new" href="/signup">Create a new account</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

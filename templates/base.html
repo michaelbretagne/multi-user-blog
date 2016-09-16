@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/grid.css">
+    <link rel="stylesheet" type="text/css" href="/static/main.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,300,300italic" rel="stylesheet" type="text/css">
+    <title>Michael's kitchen lab</title>
+</head>
+
+<body>
+    <header class="header">
+        <div class="row">
+            <div class="mytitle">
+                <a href="/blog" class="logo_blog">Michael's kitchen lab</a>
+            </div>
+            <div class="navigation_btn">
+                {% if user %}
+                Hello {{user.name}}
+                <a class="other-link" href="/blog">Home</a>
+                <a class="other-link" href="/blog/myrecipe/{{user.key().id()}}">My recipes</a>
+                <a class="other-link" href="/blog/newpost">Add a new recipe</a>
+                <a class="logout-link" href="/logout">Logout</a>
+                {% else %}
+                <a class="other-link" href="/blog">Home</a>
+                <a class="other-link" href="/login">Add a new recipe</a>
+                <a class="login-link" href="/login">Log In</a>
+                <a class="login-link" href="/signup">Sign Up</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+    <section>
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="row">
+            <div class="top-footer">
+                <ul class="social-links">
+                    <li><a class="social" href="https://www.github.com/michaelbretagne"><i class="ion-social-github"></i></a></li>
+                    <li><a class="social" href="https://www.twitter.com/michael_donal"><i class="ion-social-twitter"></i></a></li>
+                    <li><a class="social" href="https://www.linkedin.com/in/michael-donal-35b9aa28"><i class="ion-social-linkedin"></i></a></li>
+                    <li><a class="social" href="http://www.michaeldonal.com"><i class="ion-android-globe"></i></a></li>
+                </ul>
+            </div>
+            <div class="bottom-footer">
+                <p class="copyright">Website designed and developed by <a class="portofolio_link" href="http://michaeldonal.com/">Michael Donal</a></p>
+            </div>
+        </div>
+    </footer>
+    <script>
+    function goBack() {
+        window.history.back();
+    }
+    </script>
+</body>
+
+</html>

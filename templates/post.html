@@ -1,0 +1,30 @@
+<div class="post">
+    <div class="post-heading">
+        <div class="post-title">
+            {{p.subject}} by {{p.author}}
+        </div>
+        <div class="post-date">
+            {{p.created.strftime("%b %d, %Y")}}
+        </div>
+    </div>
+    <div class="post-content">
+        <div class="col span-1-of-3">
+            <p> 
+                <br>
+                <ins>Ingredients:</ins><br>
+                <br>{{p._render_ingredients | safe}}
+                <br>
+                <br>
+            </p>
+        </div>
+        <div class="col span-2-of-3">
+            <p>
+                <br>
+                <ins>Directions:</ins><br>
+                <br>{{p._render_content | safe}}
+                <br>
+                <br>
+            </p>
+        </div>
+    </div>
+</div>
