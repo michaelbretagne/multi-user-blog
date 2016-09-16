@@ -2,11 +2,11 @@
 
 Created by Michael
 
-Project 3 of Udacity's Fullsatck Nanodegree.
+<u>Project 3 of Udacity's Fullsatck Nanodegree</u>.
 
 The live version of this project at:
 
-How to run locally:
+<u>How to run locally</u>:
 
 Download and Install Python 2.7 https://www.python.org/downloads/<br>
 Dowanload and Install Google App Engine SDK for Python https://cloud.google.com/appengine/downloads<br>
