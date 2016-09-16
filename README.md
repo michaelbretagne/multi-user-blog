@@ -12,7 +12,7 @@ How to run locally:
 Download and Install Python 2.7 https://www.python.org/downloads/
 Dowanload and Install Google App Engine SDK for Python https://cloud.google.com/appengine/downloads
 Run the Google App Engine Launcher
-Clone the project (git clone https://github)
+Clone the project (git clone https://github.com/michaelbretagne/multi-user-blog.git)
 Create New Application and select the path of the cloned project
 Run the application
 Select Browse or press Ctrl+B
