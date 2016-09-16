@@ -1,5 +1,4 @@
-# multi-user-blog
-Udacity Nanodegree - Project 3
+# Multi-User-Blog
 
 Created by Michael
 
