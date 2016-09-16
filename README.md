@@ -6,7 +6,7 @@ Created by Michael
 
 The live version of this project at:
 
-<u>How to run locally</u>:
+<br><ins>How to run locally</ins>:
 
 Download and Install Python 2.7 https://www.python.org/downloads/<br>
 Dowanload and Install Google App Engine SDK for Python https://cloud.google.com/appengine/downloads<br>
