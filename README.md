@@ -2,7 +2,7 @@
 
 Created by Michael
 
-<u>Project 3 of Udacity's Fullsatck Nanodegree</u>.
+<ins>Project 3 of Udacity's Fullsatck Nanodegree</ins>.
 
 The live version of this project at:
 
