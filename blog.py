@@ -195,34 +195,37 @@ class NewPost(BlogHandler):
     def get(self):
         if self.user:
             self.render("newpost.html")
+
         else:
             self.redirect("/login")
 
     def post(self):
-        if not self.user:
-            self.redirect("/blog")
+        if self.user:
+            subject = self.request.get("subject")
+            content = self.request.get("content")
+            ingredients_content = self.request.get("ingredients_content")
+            author = self.request.get("author")
 
-        subject = self.request.get("subject")
-        content = self.request.get("content")
-        ingredients_content = self.request.get("ingredients_content")
-        author = self.request.get("author")
+            # check for subject, ingredients and content
+            if subject and content and ingredients_content:
+                p = Post(parent=blog_key(), subject=subject,
+                         content=content,
+                         ingredients_content=ingredients_content,
+                         author=author,
+                         user=self.user.key())
+                p.put()
+                self.redirect("/blog/%s" % str(p.key().id()))
 
-        # check for subject, ingredients and content
-        if subject and content and ingredients_content:
-            p = Post(parent=blog_key(), subject=subject,
-                     content=content,
-                     ingredients_content=ingredients_content,
-                     author=author,
-                     user=self.user.key())
-            p.put()
-            self.redirect("/blog/%s" % str(p.key().id()))
+            else:
+                error = "subject and content and ingredients, please!"
+                self.render("newpost.html",
+                            subject=subject,
+                            content=content,
+                            ingredients_content=ingredients_content,
+                            error=error)
+
         else:
-            error = "subject and content and ingredients, please!"
-            self.render("newpost.html",
-                        subject=subject,
-                        content=content,
-                        ingredients_content=ingredients_content,
-                        error=error)
+            self.redirect("/login")
 
 
 class EditPost(BlogHandler):
@@ -238,15 +241,18 @@ class EditPost(BlogHandler):
             content = post.content
             subject = post.subject
             ingredients_content = post.ingredients_content
+
             # check if the user is the one who created the post
             if post.user.key().id() == self.user.key().id():
                 self.render("editpost.html",
                             content=content,
                             ingredients_content=ingredients_content,
                             subject=subject)
+
             else:
                 msg = "This is not your recipe! You cannot edit this post!"
                 self.render("error.html", error=msg)
+
         else:
             self.redirect("/login")
 
@@ -265,6 +271,7 @@ class EditPost(BlogHandler):
                 post.ingredients_content = ingredients_content
                 post.put()
                 self.redirect("/blog/%s" % str(post.key().id()))
+
             else:
                 msg = "Subject, content and ingredients, please!"
                 self.render("editpost.html",
@@ -272,8 +279,9 @@ class EditPost(BlogHandler):
                             content=content,
                             ingredients_content=ingredients_content,
                             error=msg)
+
         else:
-            self.redirect("/blog")
+            self.redirect("/login")
 
 
 class DeletePost(BlogHandler):
@@ -290,12 +298,13 @@ class DeletePost(BlogHandler):
             if post.user.key().id() == self.user.key().id():
                 self.render(
                     "delete-confirmation.html", comment=post.subject)
+
             else:
                 msg = "This is not your recipe! You cannot delete this post!"
                 self.render("error.html", error=msg)
+
         else:
-            msg = "You need to be logged to delete your post!"
-            self.render("login-form.html", error=msg)
+            self.redirect("/login")
 
     def post(self, post_id):
         if self.user:
@@ -307,12 +316,13 @@ class DeletePost(BlogHandler):
                 post.delete()
                 time.sleep(0.1)
                 self.redirect("/blog")
+
             else:
                 msg = "This is not your recipe! You cannot delete this post!"
                 self.render("error.html", error=msg)
+
         else:
-            msg = "You need to be logged to delete your post!"
-            self.render("login-form.html", error=msg)
+            self.redirect("/login")
 
 
 class MyRecipe(BlogHandler):
@@ -357,36 +367,40 @@ class CommentPost(BlogHandler):
 
             self.render("commentpost.html",
                         post=post, comment=comment, post_id=post_id)
+
         else:
             self.redirect("/login")
 
     def post(self, post_id):
-        key = db.Key.from_path("Post", int(post_id), parent=blog_key())
-        post = db.get(key)
-        if not self.user:
-            self.redirect("/blog")
+        if self.user:
+            key = db.Key.from_path("Post", int(post_id), parent=blog_key())
+            post = db.get(key)
 
-        comment = self.request.get("comment")
-        author = self.request.get("author")
+            comment = self.request.get("comment")
+            author = self.request.get("author")
 
-        key = db.Key.from_path("Post", int(post_id), parent=blog_key())
-        post = db.get(key)
-        numofcom = post.numofcom
+            key = db.Key.from_path("Post", int(post_id), parent=blog_key())
+            post = db.get(key)
+            numofcom = post.numofcom
 
-        # for each comment the number of comment increase by 1 in the db
-        if comment:
-            post.numofcom += 1
-            post.put()
-            time.sleep(0.1)
-            c = Comment(parent=blog_key(),
-                        comment=comment,
-                        post=post_id,
-                        author=author)
-            c.put()
-            self.redirect("/blog")
+            # for each comment the number of comment increase by 1 in the db
+            if comment:
+                post.numofcom += 1
+                post.put()
+                time.sleep(0.1)
+                c = Comment(parent=blog_key(),
+                            comment=comment,
+                            post=post_id,
+                            author=author)
+                c.put()
+                self.redirect("/blog")
+
+            else:
+                msg = "Comment something, please!"
+                self.render("error.html", error=msg)
+
         else:
-            msg = "Comment something, please!"
-            self.render("error.html", error=msg)
+            self.redirect("/login")
 
 
 class EditComment(BlogHandler):
@@ -411,9 +425,11 @@ class EditComment(BlogHandler):
             if author == user:
                 self.render(
                     "editcomment.html", edit_comment=edit_comment, post=post)
+
             else:
                 msg = "This is not your comment! You cannot edit this post!"
                 self.render("error.html", error=msg)
+
         else:
             self.redirect("/login")
 
@@ -434,6 +450,7 @@ class EditComment(BlogHandler):
                 comment.comment = edited_comment
                 comment.put()
                 self.redirect("/blog/commentpost/%s" % str(post_id))
+
             else:
                 msg = "Comment, please!"
                 self.render("editcomment.html",
@@ -441,7 +458,7 @@ class EditComment(BlogHandler):
                             post=post,
                             error=msg)
         else:
-            self.redirect("/blog")
+            self.redirect("/login")
 
 
 class DeleteComment(BlogHandler):
@@ -463,9 +480,11 @@ class DeleteComment(BlogHandler):
             if author == user:
                 self.render(
                     "delete-confirmation.html", comment=comment.comment)
+
             else:
                 msg = "This is not your comment! You cannot delete this post"
                 self.render("error.html", error=msg)
+
         else:
             self.redirect("/login")
 
@@ -491,8 +510,7 @@ class DeleteComment(BlogHandler):
                 msg = "This is not your comment! You cannot delete this post!"
                 self.render("error.html", error=msg)
         else:
-            msg = "You need to be logged to delete your post!"
-            self.render("login-form.html", error=msg)
+            self.redirect("/login")
 
 
 class Liked(BlogHandler):
