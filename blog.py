@@ -15,6 +15,7 @@ from models.comment import Comment
 
 secret = "eloane"
 
+
 def make_secure_val(val):
     return "%s|%s" % (val, hmac.new(secret, val).hexdigest())
 
@@ -67,8 +68,10 @@ def render_post(response, post):
 
 # blog stuff
 
+
 def blog_key(name="default"):
     return db.Key.from_path("blogs", name)
+
 
 class BlogFront(BlogHandler):
 
@@ -110,7 +113,8 @@ class NewPost(BlogHandler):
             self.render("newpost.html")
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to create a new post"
+            self.redirect("/login?error="+msg)
 
     def post(self):
         if self.user:
@@ -138,7 +142,8 @@ class NewPost(BlogHandler):
                             error=error)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to create a new post"
+            self.redirect("/login?error="+msg)
 
 
 class EditPost(BlogHandler):
@@ -167,7 +172,8 @@ class EditPost(BlogHandler):
                 self.render("error.html", error=msg)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to edit a post"
+            self.redirect("/login?error="+msg)
 
     def post(self, post_id):
         key = db.Key.from_path("Post", int(post_id), parent=blog_key())
@@ -177,24 +183,27 @@ class EditPost(BlogHandler):
             content = self.request.get("content")
             ingredients_content = self.request.get("ingredients_content")
 
-            # check for subject, content and ingredients
-            if subject and content and ingredients_content:
-                post.subject = subject
-                post.content = content
-                post.ingredients_content = ingredients_content
-                post.put()
-                self.redirect("/blog/%s" % str(post.key().id()))
+            # check if the user is the one who created the post
+            if post.user.key().id() == self.user.key().id():
+                # check for subject, content and ingredients
+                if subject and content and ingredients_content:
+                    post.subject = subject
+                    post.content = content
+                    post.ingredients_content = ingredients_content
+                    post.put()
+                    self.redirect("/blog/%s" % str(post.key().id()))
 
-            else:
-                msg = "Subject, content and ingredients, please!"
-                self.render("editpost.html",
-                            subject=subject,
-                            content=content,
-                            ingredients_content=ingredients_content,
-                            error=msg)
+                else:
+                    msg = "Subject, content and ingredients, please!"
+                    self.render("editpost.html",
+                                subject=subject,
+                                content=content,
+                                ingredients_content=ingredients_content,
+                                error=msg)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to edit a post"
+            self.redirect("/login?error="+msg)
 
 
 class DeletePost(BlogHandler):
@@ -217,7 +226,8 @@ class DeletePost(BlogHandler):
                 self.render("error.html", error=msg)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to delete a post"
+            self.redirect("/login?error="+msg)
 
     def post(self, post_id):
         if self.user:
@@ -235,7 +245,8 @@ class DeletePost(BlogHandler):
                 self.render("error.html", error=msg)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to delete a post"
+            self.redirect("/login?error="+msg)
 
 
 class MyRecipe(BlogHandler):
@@ -248,6 +259,7 @@ class MyRecipe(BlogHandler):
         allrecipe = Post.all()
         myrecipe = allrecipe.filter("author =", self.user.name)
         self.render("myrecipe.html", posts=myrecipe)
+
 
 class CommentPost(BlogHandler):
 
@@ -269,7 +281,8 @@ class CommentPost(BlogHandler):
                         post=post, comment=comment, post_id=post_id)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to comment a post"
+            self.redirect("/login?error="+msg)
 
     def post(self, post_id):
         if self.user:
@@ -300,7 +313,8 @@ class CommentPost(BlogHandler):
                 self.render("error.html", error=msg)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to comment a post"
+            self.redirect("/login?error="+msg)
 
 
 class EditComment(BlogHandler):
@@ -327,11 +341,12 @@ class EditComment(BlogHandler):
                     "editcomment.html", edit_comment=edit_comment, post=post)
 
             else:
-                msg = "This is not your comment! You cannot edit this post!"
+                msg = "This is not your comment! You cannot edit this comment!"
                 self.render("error.html", error=msg)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to edit a comment"
+            self.redirect("/login?error="+msg)
 
     def post(self, post_id, comment_id):
         if self.user:
@@ -349,12 +364,15 @@ class EditComment(BlogHandler):
 
             # check for comment
             if edited_comment:
+                # check if the comment was created by the user.
                 if author == user:
                     comment.comment = edited_comment
                     comment.put()
                     self.redirect("/blog/commentpost/%s" % str(post_id))
                 else:
-                    self.redirect("/login")
+                    msg = "This is not your comment! You cannot edit this" \
+                        "comment!"
+                    self.render("error.html", error=msg)
 
             else:
                 msg = "Comment, please!"
@@ -363,7 +381,8 @@ class EditComment(BlogHandler):
                             post=post,
                             error=msg)
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to edit a comment"
+            self.redirect("/login?error="+msg)
 
 
 class DeleteComment(BlogHandler):
@@ -391,7 +410,8 @@ class DeleteComment(BlogHandler):
                 self.render("error.html", error=msg)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to delete a comment"
+            self.redirect("/login?error="+msg)
 
     def post(self, post_id, comment_id):
         if self.user:
@@ -415,7 +435,8 @@ class DeleteComment(BlogHandler):
                 msg = "This is not your comment! You cannot delete this post!"
                 self.render("error.html", error=msg)
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to delete a comment"
+            self.redirect("/login?error="+msg)
 
 
 class Liked(BlogHandler):
@@ -450,7 +471,8 @@ class Liked(BlogHandler):
                 self.render("error.html", error=error)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to like a post"
+            self.redirect("/login?error="+msg)
 
 
 class Disliked(BlogHandler):
@@ -485,7 +507,8 @@ class Disliked(BlogHandler):
                 self.render("error.html", error=error)
 
         else:
-            self.redirect("/login")
+            msg = "You have to be logged in to dislike a post"
+            self.redirect("/login?error="+msg)
 
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -568,7 +591,8 @@ class Register(Signup):
 class Login(BlogHandler):
 
     def get(self):
-        self.render("login-form.html")
+        error = self.request.get("error")
+        self.render("login-form.html", error=error)
 
     def post(self):
         """
