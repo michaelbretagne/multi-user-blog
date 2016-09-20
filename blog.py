@@ -6,20 +6,14 @@ import hmac
 import time
 from string import letters
 import webapp2
-import jinja2
 from google.appengine.ext import db
 
-template_dir = os.path.join(os.path.dirname(__file__), "templates")
-jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
-                               autoescape=True)
+import environment
+from models.user import User
+from models.post import Post
+from models.comment import Comment
 
 secret = "eloane"
-
-
-def render_str(template, **params):
-    t = jinja_env.get_template(template)
-    return t.render(params)
-
 
 def make_secure_val(val):
     return "%s|%s" % (val, hmac.new(secret, val).hexdigest())
@@ -39,7 +33,7 @@ class BlogHandler(webapp2.RequestHandler):
     def render_str(self, template, **params):
         # renders html using templates
         params["user"] = self.user
-        return render_str(template, **params)
+        return environment.render_str(template, **params)
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
@@ -71,91 +65,10 @@ def render_post(response, post):
     response.out.write(post.content)
     response.out.write(post.ingredients_content)
 
-
-# user stuff
-def make_salt(length=5):
-    return "".join(random.choice(letters) for x in xrange(length))
-
-
-def make_pw_hash(name, pw, salt=None):
-    if not salt:
-        salt = make_salt()
-    h = hashlib.sha256(name + pw + salt).hexdigest()
-    return "%s,%s" % (salt, h)
-
-
-def valid_pw(name, password, h):
-    salt = h.split(",")[0]
-    return h == make_pw_hash(name, password, salt)
-
-
-def users_key(group="default"):
-    return db.Key.from_path("users", group)
-
-
-class User(db.Model):
-
-    """
-    User Class which holds user informations like
-    name, hashed password and email
-    """
-    name = db.StringProperty(required=True)
-    pw_hash = db.StringProperty(required=True)
-    email = db.StringProperty()
-
-    @classmethod
-    def by_id(cls, uid):
-        return User.get_by_id(uid, parent=users_key())
-
-    @classmethod
-    def by_name(cls, name):
-        u = User.all().filter("name =", name).get()
-        return u
-
-    @classmethod
-    def register(cls, name, pw, email=None):
-        pw_hash = make_pw_hash(name, pw)
-        return User(parent=users_key(),
-                    name=name,
-                    pw_hash=pw_hash,
-                    email=email)
-
-    @classmethod
-    def login(cls, name, pw):
-        u = cls.by_name(name)
-        if u and valid_pw(name, pw, u.pw_hash):
-            return u
-
-
 # blog stuff
 
 def blog_key(name="default"):
     return db.Key.from_path("blogs", name)
-
-
-class Post(db.Model):
-
-    """
-    Post Class which holds informations for each post
-    """
-    user = db.ReferenceProperty(User)
-    subject = db.StringProperty(required=True)
-    content = db.TextProperty(required=True)
-    ingredients_content = db.TextProperty(required=True)
-    created = db.DateTimeProperty(auto_now_add=True)
-    last_modified = db.DateTimeProperty(auto_now=True)
-    author = db.StringProperty(required=True)
-    numofcom = db.IntegerProperty(default=0)
-    liked = db.IntegerProperty(default=0)
-    disliked = db.IntegerProperty(default=0)
-    likes_author = db.ListProperty(str)
-
-    def render(self):
-        self._render_ingredients = self.ingredients_content.replace(
-            "\n", "<br>")
-        self._render_content = self.content.replace("\n", "<br>")
-        return render_str("post.html", p=self)
-
 
 class BlogFront(BlogHandler):
 
@@ -259,7 +172,7 @@ class EditPost(BlogHandler):
     def post(self, post_id):
         key = db.Key.from_path("Post", int(post_id), parent=blog_key())
         post = db.get(key)
-        if self.user:
+        if post.user.key().id() == self.user.key().id():
             subject = self.request.get("subject")
             content = self.request.get("content")
             ingredients_content = self.request.get("ingredients_content")
@@ -335,19 +248,6 @@ class MyRecipe(BlogHandler):
         allrecipe = Post.all()
         myrecipe = allrecipe.filter("author =", self.user.name)
         self.render("myrecipe.html", posts=myrecipe)
-
-
-class Comment(db.Model):
-
-    """
-    This is a Comment Class, which holds comments information in the database.
-    """
-    comment = db.TextProperty(required=True)
-    post = db.StringProperty(required=True)
-    author = db.StringProperty(required=True)
-    created = db.DateTimeProperty(auto_now_add=True)
-    last_modified = db.DateTimeProperty(auto_now=True)
-
 
 class CommentPost(BlogHandler):
 
@@ -442,14 +342,19 @@ class EditComment(BlogHandler):
                 "Comment", int(comment_id), parent=blog_key())
             comment = db.get(keycom)
             edit_comment = comment.comment
+            user = self.user.name
+            author = comment.author
 
             edited_comment = self.request.get("edit_comment")
 
             # check for comment
             if edited_comment:
-                comment.comment = edited_comment
-                comment.put()
-                self.redirect("/blog/commentpost/%s" % str(post_id))
+                if author == user:
+                    comment.comment = edited_comment
+                    comment.put()
+                    self.redirect("/blog/commentpost/%s" % str(post_id))
+                else:
+                    self.redirect("/login")
 
             else:
                 msg = "Comment, please!"
