@@ -3,6 +3,7 @@
 <div class="row  height">
     <h1>My recipes</h1>
     {% for p in posts %}
+    <div class="posts">
         {{ p.render() | safe }}
         <div class="row">
             <form method="post">
@@ -25,6 +26,7 @@
                 </ul>
             </form>
         </div>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

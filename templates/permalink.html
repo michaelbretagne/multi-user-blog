@@ -2,8 +2,9 @@
 {% block content %}
 <div class="row height">
     <h2>Your freshly new recipe</h2>
-    {{post.render() | safe}}
-    <div class="row">
+    <div class="posts">
+        {{post.render() | safe}}
+        <div class="row">
             <form method="post">
                 <ul class="widgets">
                     <li>
@@ -25,5 +26,6 @@
                 </ul>
             </form>
         </div>
+    </div>
 </div>
 {% endblock %}

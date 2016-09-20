@@ -4,7 +4,7 @@
     <h2>Comment post</h2>
     <form method="post" class="newpost-page">
         <input type="hidden" id="post_id" name="post_id" value="{{post_id}}">
-        <div class="post">
+        <div class="post posts">
             <div class="post-heading">
                 <div class="post-title">
                     {{post.subject}} by {{post.author}}
@@ -68,7 +68,7 @@
             </div>
             <div class="comment">
                 {% for c in comment %}
-                <div class="comment_text">
+                <div class="comment_text posts">
                     <b>{{c.author}}</b> ({{c.created.strftime("%b %d, %Y")}})
                     <br>
                     <br>
