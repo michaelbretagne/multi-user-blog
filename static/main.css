@@ -219,11 +219,11 @@ body {
 
 h1,
 h2 {
-    color: #f8b500;
+    color: #5e5e5e;
     text-align: center;
     font-size: 24px;
     font-weight: bold;
-    margin: 30px auto 0 auto;
+    margin: 30px auto 10px auto;
 }
 
 h2 {
@@ -237,6 +237,14 @@ p {
 .pre {
     display: block;
     white-space: pre-line;
+}
+
+.posts {
+    background-color: #fff;
+    box-shadow: 1px 1px 5px 1px #ccc;
+    border-radius: 3px;
+    padding: 5px 10px;
+    margin-bottom: 10px;
 }
 
 .error {
@@ -317,12 +325,11 @@ textarea {
 
 .widgets {
     width: 90%;
-    margin: 0px auto 10px auto;
+    margin: 0px auto 0px auto;
     padding: 10px 0px;
     display: flex;
     list-style: none;
     border-top: solid 1px #f1f1f1;
-    border-bottom: solid 10px #f8b500;
 }
 
 .likes_widgets {
@@ -494,7 +501,7 @@ label + label {
 
 .comment_text {
     border-top: solid 1px #f1f1f1;
-    padding: 8px 0;
+    padding: 8px 8px;
 }
 
 
